@@ -12,6 +12,7 @@ func registerRoutes(mux *http.ServeMux, db *sql.DB) {
 	mux.HandleFunc("/api/health", handleHealth)
 	mux.HandleFunc("/api/detections", handleDetections(db))
 	mux.HandleFunc("/api/detections/", handleDetection(db))
+	mux.HandleFunc("/api/stats", handleStats(db))
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -180,5 +181,91 @@ func handleDetection(db *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(detectionDetail{d, votes})
+	}
+}
+
+func handleStats(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// totals by detection type
+		rows, err := db.Query(`
+			SELECT detection_type, COUNT(*)
+			FROM detections
+			GROUP BY detection_type`)
+		if err != nil {
+			http.Error(w, "db error", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		totals := map[string]int{}
+		for rows.Next() {
+			var dtype string
+			var count int
+			if err := rows.Scan(&dtype, &count); err != nil {
+				http.Error(w, "scan error", http.StatusInternalServerError)
+				return
+			}
+			totals[dtype] = count
+		}
+
+		// top 10 source IPs
+		type ipCount struct {
+			SrcIP string `json:"src_ip"`
+			Count int    `json:"count"`
+		}
+		ipRows, err := db.Query(`
+			SELECT src_ip::text, COUNT(*) AS cnt
+			FROM detections
+			GROUP BY src_ip
+			ORDER BY cnt DESC
+			LIMIT 10`)
+		if err != nil {
+			http.Error(w, "db error", http.StatusInternalServerError)
+			return
+		}
+		defer ipRows.Close()
+
+		topIPs := []ipCount{}
+		for ipRows.Next() {
+			var ip ipCount
+			if err := ipRows.Scan(&ip.SrcIP, &ip.Count); err != nil {
+				http.Error(w, "scan error", http.StatusInternalServerError)
+				return
+			}
+			topIPs = append(topIPs, ip)
+		}
+
+		// per-node counts
+		type nodeCount struct {
+			NodeID string `json:"node_id"`
+			Count  int    `json:"count"`
+		}
+		nodeRows, err := db.Query(`
+			SELECT node_id, COUNT(*)
+			FROM detections
+			GROUP BY node_id
+			ORDER BY node_id`)
+		if err != nil {
+			http.Error(w, "db error", http.StatusInternalServerError)
+			return
+		}
+		defer nodeRows.Close()
+
+		perNode := []nodeCount{}
+		for nodeRows.Next() {
+			var n nodeCount
+			if err := nodeRows.Scan(&n.NodeID, &n.Count); err != nil {
+				http.Error(w, "scan error", http.StatusInternalServerError)
+				return
+			}
+			perNode = append(perNode, n)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"totals":      totals,
+			"top_src_ips": topIPs,
+			"per_node":    perNode,
+		})
 	}
 }
