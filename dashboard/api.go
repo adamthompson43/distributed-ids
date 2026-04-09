@@ -13,6 +13,7 @@ func registerRoutes(mux *http.ServeMux, db *sql.DB) {
 	mux.HandleFunc("/api/detections", handleDetections(db))
 	mux.HandleFunc("/api/detections/", handleDetection(db))
 	mux.HandleFunc("/api/stats", handleStats(db))
+	mux.HandleFunc("/api/nodes/health", handleNodesHealth(db))
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -266,6 +267,43 @@ func handleStats(db *sql.DB) http.HandlerFunc {
 			"totals":      totals,
 			"top_src_ips": topIPs,
 			"per_node":    perNode,
+		})
+	}
+}
+
+func handleNodesHealth(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rows, err := db.Query(`
+			SELECT DISTINCT ON (node_id)
+				node_id, reachable, response_time_ms, checked_at
+			FROM node_health
+			ORDER BY node_id, checked_at DESC`)
+		if err != nil {
+			http.Error(w, "db error", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		type nodeHealth struct {
+			NodeID         string `json:"node_id"`
+			Reachable      bool   `json:"reachable"`
+			ResponseTimeMs *int   `json:"response_time_ms"`
+			CheckedAt      string `json:"checked_at"`
+		}
+
+		nodes := []nodeHealth{}
+		for rows.Next() {
+			var n nodeHealth
+			if err := rows.Scan(&n.NodeID, &n.Reachable, &n.ResponseTimeMs, &n.CheckedAt); err != nil {
+				http.Error(w, "scan error", http.StatusInternalServerError)
+				return
+			}
+			nodes = append(nodes, n)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{
+			"nodes": nodes,
 		})
 	}
 }
