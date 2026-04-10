@@ -142,14 +142,15 @@ func (s *Store) PollPeerHealth(peers []string, interval time.Duration) {
 				resp, err := client.Get(url)
 				elapsed := int(time.Since(start).Milliseconds())
 
-				if err != nil || resp.StatusCode != http.StatusOK {
-					if resp != nil {
-						resp.Body.Close()
-					}
+				if err != nil {
 					s.RecordHealth(peer, false, nil)
 					return
 				}
 				resp.Body.Close()
+				if resp.StatusCode != http.StatusOK {
+					s.RecordHealth(peer, false, nil)
+					return
+				}
 				s.RecordHealth(peer, true, &elapsed)
 			}(peer)
 		}
