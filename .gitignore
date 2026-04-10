@@ -25,6 +25,10 @@ go.work
 data/
 model_params.json
 
+dashboard/sentineldash
+dashboard/frontend/dist/
+dashboard/frontend/node_modules/
+
 _site/
 .jekyll-cache/
 .jekyll-metadata
