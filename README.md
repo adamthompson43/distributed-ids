@@ -29,7 +29,7 @@ Trained on the [CICIDS2017](https://www.unb.ca/cic/datasets/ids-2017.html) datas
 
 ---
 
-## Tech Stack
+## Technologies
 
 - **Go** — packet capture (gopacket), ML inference, consensus HTTP server, dashboard API
 - **Python / scikit-learn** — model training (`cicids2017.ipynb`)
@@ -85,13 +85,13 @@ npm run dev   # http://localhost:5173
 
 | Flag | Default | Purpose |
 |------|---------|---------|
-| `-pcap` | — | Replay a pcap file instead of live capture |
+| `-pcap` | - | Replay a pcap file instead of live capture |
 | `-interface` | `en0` | Live capture interface (requires sudo) |
 | `-model` | `../model_params.json` | Path to model JSON |
 | `-node-id` | `node1` | Node identifier |
-| `-listen` | — | Address to serve `/vote` on (e.g. `:8081`) |
-| `-peers` | — | Comma-separated peer base URLs |
-| `-db` | — | PostgreSQL DSN (omit for standalone mode) |
+| `-listen` | - | Address to serve `/vote` on (e.g. `:8081`) |
+| `-peers` | - | Comma-separated peer base URLs |
+| `-db` | - | PostgreSQL DSN (omit for standalone mode) |
 | `-consensus-timeout` | `2s` | Peer vote collection timeout |
 | `-flow-timeout` | `30s` | Idle flow expiry |
 
