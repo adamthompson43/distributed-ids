@@ -35,7 +35,17 @@ export default function Alerts({ onSelect }) {
   return (
     <div>
       <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+        <select
+          value={typeFilter}
+          onChange={e => setTypeFilter(e.target.value)}
+          style={{
+            color: 'var(--text-h)',
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: '4px',
+            padding: '0.25rem 0.5rem',
+          }}
+        >
           <option value=''>All types</option>
           <option value='consensus_anomaly'>Anomaly</option>
           <option value='overruled'>Overruled</option>
