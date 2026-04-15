@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -146,12 +147,21 @@ func (s *Store) PollPeerHealth(peers []string, interval time.Duration) {
 					s.RecordHealth(peer, false, nil)
 					return
 				}
-				resp.Body.Close()
+				defer resp.Body.Close()
 				if resp.StatusCode != http.StatusOK {
 					s.RecordHealth(peer, false, nil)
 					return
 				}
-				s.RecordHealth(peer, true, &elapsed)
+
+				// parse node_id from {"node_id":"nodeX","status":"ok"}
+				var body struct {
+					NodeID string `json:"node_id"`
+				}
+				nodeID := peer // fallback to URL if parse fails
+				if err := json.NewDecoder(resp.Body).Decode(&body); err == nil && body.NodeID != "" {
+					nodeID = body.NodeID
+				}
+				s.RecordHealth(nodeID, true, &elapsed)
 			}(peer)
 		}
 	}

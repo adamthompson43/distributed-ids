@@ -252,9 +252,13 @@ func (t *FlowTracker) ExpireIdleFlows() {
 
 func (t *FlowTracker) FlushAll() {
 	t.mu.Lock()
-	defer t.mu.Unlock()
+	flows := make([]*Flow, 0, len(t.flows))
 	for key, f := range t.flows {
 		delete(t.flows, key)
+		flows = append(flows, f)
+	}
+	t.mu.Unlock()
+	for _, f := range flows {
 		t.onExpiry(f)
 	}
 }

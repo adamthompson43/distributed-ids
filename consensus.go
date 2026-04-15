@@ -61,7 +61,8 @@ func (cm *ConsensusManager) Start(listenAddr string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/vote", cm.HandleVote)
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-		fmt.Fprintln(w, "ok")
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"node_id":%q,"status":"ok"}`, cm.nodeID)
 	})
 	log.Printf("Consensus server listening on %s (node_id=%s, peers=%d)", listenAddr, cm.nodeID, len(cm.peers))
 	go func() {

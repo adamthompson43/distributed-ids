@@ -31,11 +31,11 @@ Trained on the [CICIDS2017](https://www.unb.ca/cic/datasets/ids-2017.html) datas
 
 ## Technologies
 
-- **Go** — packet capture (gopacket), ML inference, consensus HTTP server, dashboard API
-- **Python / scikit-learn** — model training (`cicids2017.ipynb`)
-- **PostgreSQL** — detections, consensus votes, node health logs
-- **React + Vite** — dashboard frontend
-- **AWS** — EC2 (nodes + dashboard), RDS (PostgreSQL), ALB (dashboard)
+- **Go**: packet capture (gopacket), ML inference, consensus HTTP server, dashboard API
+- **Python / scikit-learn**: model training (`cicids2017.ipynb`)
+- **PostgreSQL**: detections, consensus votes, node health logs
+- **React + Vite**: dashboard frontend
+- **AWS**: EC2 (nodes + dashboard), RDS (PostgreSQL), ALB (dashboard)
 
 ---
 
@@ -45,7 +45,7 @@ Trained on the [CICIDS2017](https://www.unb.ca/cic/datasets/ids-2017.html) datas
 - Go 1.23+
 - libpcap (`brew install libpcap`)
 - PostgreSQL (or Docker)
-- Node.js 18+ (for dashboard)
+- Node.js 20+ (for dashboard frontend)
 
 ### Start a local database
 ```bash
