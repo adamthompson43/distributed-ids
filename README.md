@@ -9,4 +9,4 @@ Supervisor: Dr. John Sheppard
 
 ---
 
-Documentation at: [project report](https://github.com/adamthompson43/fyp-sem-2-report).
+Report repository located [here](https://github.com/adamthompson43/fyp-sem-2-report).
