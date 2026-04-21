@@ -41,7 +41,7 @@ clean:
 # AWS
 
 AWS_KEY    := ~/.ssh/sentinel-key.pem
-NODE1_IP   := 108.131.100.238
+NODE1_IP   := 34.251.54.65
 NODE2_IP   := 3.253.72.69
 NODE3_IP   := 18.200.241.225
 DASH_IP    := 34.244.198.157
