@@ -152,5 +152,7 @@ func main() {
 	if *pcapFile != "" {
 		log.Println("EOF - flushing remaining flows...")
 		tracker.FlushAll()
+		log.Println("PCAP replay complete - /vote endpoint still active. Ctrl+C to exit.")
+		select {}
 	}
 }
