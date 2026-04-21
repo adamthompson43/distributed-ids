@@ -32,11 +32,12 @@ type PeerVote struct {
 }
 
 type ConsensusResult struct {
-	Anomaly    bool
-	YesVotes   int
-	TotalVotes int
-	LocalScore float64
-	PeerVotes  []PeerVote
+	Anomaly     bool
+	YesVotes    int
+	TotalVotes  int
+	LocalScore  float64
+	PeerVotes   []PeerVote
+	ConsensusMs int64
 }
 
 type ConsensusManager struct {
@@ -98,6 +99,7 @@ func (cm *ConsensusManager) HandleVote(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cm *ConsensusManager) RequestVotes(key FlowKey, features [21]float64, localAnomaly bool, localScore float64) ConsensusResult {
+	start := time.Now()
 	// local node counts as vote #1
 	yesVotes := boolToInt(localAnomaly)
 	totalVotes := 1
@@ -183,11 +185,12 @@ func (cm *ConsensusManager) RequestVotes(key FlowKey, features [21]float64, loca
 
 	// strict majority - ties go to benign - unreachable peers are excluded from totalVotes
 	return ConsensusResult{
-		Anomaly:    yesVotes > totalVotes/2,
-		YesVotes:   yesVotes,
-		TotalVotes: totalVotes,
-		LocalScore: localScore,
-		PeerVotes:  peerVotes,
+		Anomaly:     yesVotes > totalVotes/2,
+		YesVotes:    yesVotes,
+		TotalVotes:  totalVotes,
+		LocalScore:  localScore,
+		PeerVotes:   peerVotes,
+		ConsensusMs: time.Since(start).Milliseconds(),
 	}
 }
 

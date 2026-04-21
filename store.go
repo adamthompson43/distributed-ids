@@ -57,14 +57,14 @@ func (s *Store) SaveAnomaly(f *Flow, features [21]float64, result ConsensusResul
 			(node_id, detection_type,
 			 src_ip, dst_ip, src_port, dst_port, protocol,
 			 flow_start, flow_end, fwd_packets, bwd_packets, duration_us,
-			 local_score, features, yes_votes, total_votes)
-		VALUES ($1,$2, $3,$4,$5,$6,$7, $8,$9,$10,$11,$12, $13,$14,$15,$16)
+			 local_score, features, yes_votes, total_votes, consensus_ms)
+		VALUES ($1,$2, $3,$4,$5,$6,$7, $8,$9,$10,$11,$12, $13,$14,$15,$16,$17)
 		RETURNING id`,
 		s.nodeID, detType,
 		f.Key.SrcIP, f.Key.DstIP, f.Key.SrcPort, f.Key.DstPort, f.Key.Proto,
 		f.StartTime, f.LastSeen, f.FwdPackets, f.BwdPackets, f.Duration().Microseconds(),
 		result.LocalScore, pq.Array(featSlice),
-		result.YesVotes, result.TotalVotes,
+		result.YesVotes, result.TotalVotes, result.ConsensusMs,
 	).Scan(&detectionID)
 	if err != nil {
 		log.Printf("store: insert detection: %v", err)

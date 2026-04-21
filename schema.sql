@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS detections (
     features         DOUBLE PRECISION[],
     yes_votes        INTEGER,
     total_votes      INTEGER,
-    connection_count INTEGER
+    connection_count INTEGER,
+    consensus_ms     BIGINT
 );
 
 CREATE INDEX IF NOT EXISTS idx_detections_detected_at
