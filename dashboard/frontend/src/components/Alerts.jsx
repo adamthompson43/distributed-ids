@@ -46,10 +46,10 @@ export default function Alerts({ onSelect }) {
             padding: '0.25rem 0.5rem',
           }}
         >
-          <option value=''>All types</option>
-          <option value='consensus_anomaly'>Anomaly</option>
-          <option value='overruled'>Overruled</option>
-          <option value='brute_force'>Brute Force</option>
+          <option value='' style={{ color: 'var(--text-h)', background: 'var(--bg)' }}>All types</option>
+          <option value='consensus_anomaly' style={{ color: 'var(--text-h)', background: 'var(--bg)' }}>Anomaly</option>
+          <option value='overruled' style={{ color: 'var(--text-h)', background: 'var(--bg)' }}>Overruled</option>
+          <option value='brute_force' style={{ color: 'var(--text-h)', background: 'var(--bg)' }}>Brute Force</option>
         </select>
         <span style={{ color: '#666', alignSelf: 'center' }}>
           {data.total} total
